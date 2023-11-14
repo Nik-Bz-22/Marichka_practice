@@ -1,55 +1,14 @@
-﻿#include <iostream>
+#include <iostream>
 #include <random>
+
 using namespace std;
 
 class Matrix {
 public:
     struct Size {
-        int n;
-        int m;
+        int row;
+        int column;
     };
-
-    double randomGen() {
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_real_distribution<double> distribution(1.0, 100.0);
-
-        double mydouble = distribution(gen);
-
-        return mydouble;
-    }
-
-    double** createMatrix(Size si) {
-        double** matrix = new double* [si.n];
-        for (int i = 0; i < si.n; i++) {
-            matrix[i] = new double[si.m];
-        }
-        return matrix;
-    }
-
-    void fillMatrix(double** matrix, Size si) {
-        for (int i = 0; i < si.n; i++) {
-            for (int j = 0; j < si.m; j++) {
-                matrix[i][j] = randomGen();
-            }
-        }
-    }
-
-    void memoryClean(double** matrix, Size si) {
-        for (int i = 0; i < si.n; i++) {
-            delete[] matrix[i];
-        }
-        delete[] matrix;
-    }
-
-    void printMatrix(double** matrix, Size si) {
-        for (int i = 0; i < si.n; i++) {
-            for (int j = 0; j < si.m; j++) {
-                cout << matrix[i][j] << "\t";
-            }
-            cout << endl;
-        }
-    }
 
     struct Element {
         double element;
@@ -57,28 +16,58 @@ public:
         int column;
     };
 
-    Element* getMasOfMatrixElements(double** matrix, Size size) {
-        Element* masOfElements = new Element[size.n * size.m];
-        for (int i = 0; i < size.n; i++) {
-            for (int j = 0; j < size.m; j++) {
-                Element el;
-                el.row = i;
-                el.column = j;
-                el.element = matrix[i][j];
-                masOfElements[i * size.m + j] = el;
-            }
-        }
-        return masOfElements;
+    double randomGen() {
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_real_distribution<double> distribution(1.0, 1000.0);
+
+        double mydouble = distribution(gen);
+
+        return mydouble;
     }
 
+    double** createMatrix(Size si) {
+        double** matrix = new double* [si.row];
+        for (int i = 0; i < si.row; i++) {
+            matrix[i] = new double[si.column];
+        }
+        return matrix;
+    }
+
+    void fillMatrix(double** matrix, Size si) {
+        for (int i = 0; i < si.row; i++) {
+            for (int j = 0; j < si.column; j++) {
+                matrix[i][j] = randomGen();
+            }
+        }
+    }
+
+    void memoryClean(double** matrix, Size si) {
+        for (int i = 0; i < si.row; i++) {
+            delete[] matrix[i];
+        }
+        delete[] matrix;
+    }
+
+    void printMatrix(double** matrix, Size si) {
+        for (int i = 0; i < si.row; i++) {
+            for (int j = 0; j < si.column; j++) {
+                cout << matrix[i][j] << "\t";
+            }
+            cout << endl;
+        }
+    }
+
+
+
     Element* getExtraElements(double** matrix, Size size) {
-        Element* extraElements = new Element[size.m];
-        for (int j = 0; j < size.m; j++) {
+        Element* extraElements = new Element[size.column];
+        for (int j = 0; j < size.column; j++) {
             double maxElement = matrix[0][j];
             int maxRow = 0;
-            double columnSum = 0.0;  // Сумма элементов в колонке
+            double columnSum = 0.0;
 
-            for (int i = 0; i < size.n; i++) {
+            for (int i = 0; i < size.row; i++) {
                 columnSum += matrix[i][j];
 
                 if (matrix[i][j] > maxElement) {
@@ -88,7 +77,6 @@ public:
             }
 
             if (maxElement > columnSum - maxElement) {
-                // Если максимальный элемент больше суммы остальных элементов
                 Element el;
                 el.row = maxRow;
                 el.column = j;
@@ -96,7 +84,6 @@ public:
                 extraElements[j] = el;
             }
             else {
-                // Если не удовлетворяет условию, просто заполняем нулевыми значениями
                 Element el;
                 el.row = 0;
                 el.column = j;
@@ -111,9 +98,10 @@ public:
 };
 
 int main() {
+
     Matrix::Size size;
-    size.n = 3;
-    size.m = 3;
+    size.row = 5;
+    size.column = 4;
 
     Matrix myMatrix;
     double** matrix = myMatrix.createMatrix(size);
@@ -122,7 +110,7 @@ int main() {
     myMatrix.printMatrix(matrix, size);
 
     Matrix::Element* el = myMatrix.getExtraElements(matrix, size);
-    for (int i = 0; i < size.m; ++i) { // Используем size.m, так как у нас size.m столбцов
+    for (int i = 0; i < size.column; ++i) {
         cout << "Element: " << el[i].element << "\tRow: " << el[i].row << " Column: " << el[i].column << endl;
     }
 
@@ -130,3 +118,4 @@ int main() {
 
     return 0;
 }
+
